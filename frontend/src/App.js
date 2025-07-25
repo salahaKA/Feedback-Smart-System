@@ -22,6 +22,10 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 
+import SentimentChart from "./SentimentChart";
+import SentimentBarChart from "./SentimentBarChart";
+
+
 const API_URL = "http://127.0.0.1:8000/api/feedback/";
 
 function App() {
@@ -90,14 +94,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <>
-        {/* <AppBar position="static">
-        <Toolbar>
-          <FeedbackIcon sx={{ mr: 1 }} />
-          <Typography variant="h6" component="div">
-            FeedSmart – AI Feedback
-          </Typography>
-        </Toolbar>
-      </AppBar> */}
+        
         <AppBar position="static" sx={{ bgcolor: "#1976d2" }}>
           <Toolbar>
             <FeedbackIcon sx={{ mr: 1 }} />
@@ -156,6 +153,13 @@ function App() {
               </Button>
             </Box>
           </Paper>
+          <Divider sx={{ my: 4 }} />
+
+          <SentimentChart feedbacks={feedbacks} />
+          <Divider sx={{ my: 4 }} />
+<SentimentBarChart feedbacks={feedbacks} />
+
+
 
           <Divider sx={{ my: 4 }} />
 
