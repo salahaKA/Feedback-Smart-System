@@ -9,7 +9,18 @@ import {
   Box,
   Divider,
   CircularProgress,
+  Toolbar,
+  Stack,
+  Chip,
+  IconButton,
+  AppBar,
 } from "@mui/material";
+
+import FeedbackIcon from "@mui/icons-material/Feedback";
+
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
 
 const API_URL = "http://127.0.0.1:8000/api/feedback/";
 
@@ -19,6 +30,14 @@ function App() {
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  const [mode, setMode] = useState("light");
+
+  const theme = createTheme({
+    palette: {
+      mode,
+    },
+  });
 
   const fetchFeedbacks = async () => {
     setLoading(true);
@@ -56,69 +75,125 @@ function App() {
     }
   };
 
+  const getSentimentColor = (sentiment) => {
+    switch (sentiment.toLowerCase()) {
+      case "positive":
+        return "success";
+      case "negative":
+        return "error";
+      case "neutral":
+        return "default";
+      default:
+        return "default";
+    }
+  };
   return (
-    <Container maxWidth="md" sx={{ mt: 6 }}>
-      <Paper elevation={4} sx={{ p: 4 }}>
-        <Typography variant="h4" align="center" gutterBottom>
-          🧠 FeedSmart Feedback
-        </Typography>
+    <ThemeProvider theme={theme}>
+      <>
+        {/* <AppBar position="static">
+        <Toolbar>
+          <FeedbackIcon sx={{ mr: 1 }} />
+          <Typography variant="h6" component="div">
+            FeedSmart – AI Feedback
+          </Typography>
+        </Toolbar>
+      </AppBar> */}
+        <AppBar position="static" sx={{ bgcolor: "#1976d2" }}>
+          <Toolbar>
+            <FeedbackIcon sx={{ mr: 1 }} />
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              FeedSmart – AI Feedback 🧠
+            </Typography>
+            <IconButton
+              color="inherit"
+              onClick={() =>
+                setMode((prev) => (prev === "light" ? "dark" : "light"))
+              }
+            >
+              {mode === "light" ? <DarkModeIcon /> : <LightModeIcon />}
+            </IconButton>
+          </Toolbar>
+        </AppBar>
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-          <TextField
-            label="Your Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            fullWidth
-            required
-            margin="normal"
-          />
-          <TextField
-            label="Your Feedback"
-            value={feedbackText}
-            onChange={(e) => setFeedbackText(e.target.value)}
-            fullWidth
-            required
-            multiline
-            rows={3}
-            margin="normal"
-          />
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            fullWidth
-            disabled={submitting}
-            sx={{ mt: 2 }}
-          >
-            {submitting ? "Submitting..." : "Submit Feedback"}
-          </Button>
-        </Box>
+        <Container maxWidth="md" sx={{ mt: 5 }}>
+          <Paper elevation={3} sx={{ p: 4 }}>
+            <Typography variant="h5" align="center" gutterBottom>
+              ✍️ Submit Your Feedback
+            </Typography>
 
-        <Divider sx={{ my: 4 }} />
+            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+              <TextField
+                label="Your Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                fullWidth
+                required
+                margin="normal"
+              />
+              <TextField
+                label="Your Feedback"
+                value={feedbackText}
+                onChange={(e) => setFeedbackText(e.target.value)}
+                fullWidth
+                required
+                multiline
+                rows={3}
+                margin="normal"
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                disabled={submitting}
+                sx={{
+                  mt: 2,
+                  backgroundColor: "#1976d2",
+                  "&:hover": { backgroundColor: "#115293" },
+                }}
+              >
+                {submitting ? "Submitting..." : "Submit Feedback"}
+              </Button>
+            </Box>
+          </Paper>
 
-        <Typography variant="h5" gutterBottom>
-          Recent Feedback
-        </Typography>
+          <Divider sx={{ my: 4 }} />
 
-        {loading ? (
-          <Box textAlign="center" mt={2}>
-            <CircularProgress />
-          </Box>
-        ) : feedbacks.length === 0 ? (
-          <Typography color="text.secondary">No feedback yet.</Typography>
-        ) : (
-          feedbacks.map((fb) => (
-            <Paper key={fb.id} variant="outlined" sx={{ p: 2, mb: 2 }}>
-              <Typography fontWeight="bold">{fb.name}</Typography>
-              <Typography>{fb.feedback_text}</Typography>
-              <Typography color="text.secondary" sx={{ mt: 1 }}>
-                Sentiment: <strong>{fb.sentiment}</strong>
-              </Typography>
-            </Paper>
-          ))
-        )}
-      </Paper>
-    </Container>
+          <Typography variant="h6" gutterBottom>
+            📝 Recent Feedback
+          </Typography>
+
+          {loading ? (
+            <Box textAlign="center" mt={2}>
+              <CircularProgress />
+            </Box>
+          ) : feedbacks.length === 0 ? (
+            <Typography color="text.secondary">No feedback yet.</Typography>
+          ) : (
+            feedbacks.map((fb) => (
+              <Paper
+                key={fb.id}
+                variant="outlined"
+                sx={{ p: 3, mb: 2, borderRadius: 2, boxShadow: 2 }}
+              >
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  <Typography fontWeight="bold">{fb.user_name}</Typography>
+                  <Chip
+                    label={fb.sentiment}
+                    color={getSentimentColor(fb.sentiment)}
+                  />
+                </Stack>
+                <Typography sx={{ mt: 1 }}>{fb.feedback_text}</Typography>
+              </Paper>
+            ))
+          )}
+        </Container>
+      </>
+    </ThemeProvider>
   );
 }
 
