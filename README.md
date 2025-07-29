@@ -87,4 +87,4 @@ This project is licensed under the MIT License.
 
 🙋‍♀️ Author
 Kadeejath Salaha |
-Full Stack Developer | ❤️ Codestudy4
+Full Stack Developer | Tech Enthusiast
